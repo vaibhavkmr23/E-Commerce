@@ -12,6 +12,8 @@ app.set('views', 'views');
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require('./routes/shop');
 
+const sequelize = require('./utils/database');
+
 
 const errorControllers = require('./controllers/error')
 
@@ -23,5 +25,12 @@ app.use(shopRoutes);
 
 app.use(errorControllers.get404);
 
-
+sequelize.sync().then(result =>{
+    console.log(result);
+}).catch( err =>{
+    console.log(err);
+});
 app.listen(3000);
+
+
+
