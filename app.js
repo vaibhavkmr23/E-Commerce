@@ -15,14 +15,16 @@ const shopRoutes = require('./routes/shop');
 const errorControllers = require('./controllers/error');
 const mongoConnect = require("./utils/database").mongoConnect;
 
+const User = require('./models/user');
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public'))); // for serving path of static files eg. css files
 
-app.use((req, res, next) =>{
-    // User.findByPk(1).then(user =>{
-    //     req.user = user;
-    //     next();
-    // }).catch(err => console.log(err));
+app.use((req, res, next) => {
+    User.findById('6318903a1b086de1823927fe').then(user => {
+        req.user = user;
+        next();
+    }).catch(err => console.log(err));
     next();
 });
 
