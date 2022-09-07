@@ -16,7 +16,7 @@ router.get("/products", shopController.getProducts);
 
 // Always add specific route above dynamic routes, coz order matters
 
-// router.get('/products/:productId', shopController.getProduct);
+router.get('/products/:productId', shopController.getProduct);
 
 // router.get("/cart", shopController.getCart);
 
