@@ -13,7 +13,7 @@ const adminRoutes = require("./routes/admin");
 // const shopRoutes = require('./routes/shop');
 
 const errorControllers = require('./controllers/error');
-const mongoConnect = require("./utils/database");
+const mongoConnect = require("./utils/database").mongoConnect;
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public'))); // for serving path of static files eg. css files
@@ -23,6 +23,7 @@ app.use((req, res, next) =>{
     //     req.user = user;
     //     next();
     // }).catch(err => console.log(err));
+    next();
 });
 
 app.use('/admin', adminRoutes);
