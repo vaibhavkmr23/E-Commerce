@@ -15,10 +15,20 @@ class User {
     }
 
     addToCart(product) {
-        // const cartProduct = this.cart.items.findIndex(cp => {
-        //     return cp._id === product._id
-        // });
-        const updatedCart = { items: [{ productId: new ObjectId(product._id), quantity: 1 }] };
+        const cartProductIndex = this.cart.items.findIndex(cp => {
+            return cp.productId.toString() === product._id.toString(); // Js checks its value and type so make it string as Js doesnt think ObjectId as Type
+        });
+        let newQuantity = 1;
+        const updatedCartItems = [...this.cart.items];
+
+        if (cartProductIndex >= 0) {
+            newQuantity = this.cart.items[cartProductIndex].quantity + 1;
+            updatedCartItems[cartProductIndex].quantity = newQuantity;
+        }
+        else {
+            updatedCartItems.push({ productId: new ObjectId(product._id), quantity: newQuantity })
+        }
+        const updatedCart = { items: updatedCartItems };
         const db = getDb();
         return db.collection('users')
             .updateOne({ _id: new ObjectId(this._id) },
@@ -28,7 +38,7 @@ class User {
 
     static findById(userId) {
         const db = getDb();
-        return db.collection('users').findOne({ _id: new ObjectId(userId)});
+        return db.collection('users').findOne({ _id: new ObjectId(userId) });
     }
 }
 
