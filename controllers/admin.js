@@ -19,7 +19,8 @@ exports.postAddProduct = (req, res, next) => {
         title: title,
         imageUrl: imageUrl,
         price: price,
-        description: description
+        description: description,
+        userId: req.user // Mongoose will find user id from req.user object
     });
     product.save()
         .then(result => {
