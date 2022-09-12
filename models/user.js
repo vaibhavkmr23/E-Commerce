@@ -70,7 +70,7 @@ class User {
 
     getOrders() {
         const db = getDb();
-        // return db.collection('orders').
+        return db.collection('orders').find({ 'user._id': new ObjectId(this._id) }).toArray();
     }
 
     static findById(userId) {
