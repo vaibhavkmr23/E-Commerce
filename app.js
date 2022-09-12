@@ -3,6 +3,8 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const express = require('express');
 
+const mongoose = require("mongoose");
+
 const app = express();
 
 
@@ -13,7 +15,6 @@ const adminRoutes = require("./routes/admin");
 const shopRoutes = require('./routes/shop');
 
 const errorControllers = require('./controllers/error');
-const mongoConnect = require("./utils/database").mongoConnect;
 
 const User = require('./models/user');
 
@@ -32,6 +33,10 @@ app.use(shopRoutes);
 
 app.use(errorControllers.get404);
 
-mongoConnect(() => {
-    app.listen(3000);
-});
+mongoose.connect('mongodb+srv://Vaibhav:23101995@cluster0.gsxn3bf.mongodb.net/test')
+    .then(result => {
+        app.listen(3000);
+        console.log("Connected");
+    }).catch(err => {
+        console.log(err);
+    })
