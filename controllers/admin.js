@@ -1,8 +1,6 @@
 const Product = require('../models/product');
 
 exports.getAddProduct = (req, res, next) => {
-    // console.log("IN the middleware!");
-    // res.sendFile(path.join(rootDir, 'views' , 'add-product.html'));
     res.render('admin/edit-product', {
         pageTitle: 'Add Product',
         path: '/admin/add-product',
@@ -30,13 +28,6 @@ exports.postAddProduct = (req, res, next) => {
         }).catch(err => {
             console.log(err);
         })
-
-    // const product = new Product(null, title, imageUrl, description, price);
-    // product.save().then(() => {
-    //     res.redirect('/');
-    // }).catch(err => {
-    //     console.log(err);
-    // });
 
 };
 
