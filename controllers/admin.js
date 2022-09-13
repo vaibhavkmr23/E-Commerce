@@ -5,6 +5,7 @@ exports.getAddProduct = (req, res, next) => {
         pageTitle: 'Add Product',
         path: '/admin/add-product',
         editing: false,
+        isAuthenticated: req.isloggedIn
     });// rendering PUG file for add product page
 }
 
@@ -46,7 +47,8 @@ exports.getEditProduct = (req, res, next) => {
                 pageTitle: 'Edit Product',
                 path: '/admin/edit-product',
                 editing: editMode,
-                product: product
+                product: product,
+                isAuthenticated: req.isloggedIn
             });// rendering PUG file for add product page
         }).catch(err => {
             console.log(err);
@@ -86,6 +88,7 @@ exports.getProducts = (req, res, next) => {
                 prods: products,
                 pageTitle: 'Admin Products',
                 path: '/admin/products',
+                isAuthenticated: req.isloggedIn
             }); // Rendering Pug file for Shop page
         }).catch(err => {
             console.log(err);
