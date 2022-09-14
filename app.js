@@ -5,8 +5,16 @@ const express = require('express');
 
 const mongoose = require("mongoose");
 const session = require('express-session');
+const MongoDbStore = require('connect-mongodb-session')(session);
+
+const MONGODB_URI = 'mongodb+srv://Vaibhav:23101995@cluster0.gsxn3bf.mongodb.net/shop';
+
 
 const app = express();
+const store = new MongoDbStore({
+    uri: MONGODB_URI,
+    collection: 'sessions'
+})
 
 
 app.set('view engine', 'ejs');
@@ -22,7 +30,7 @@ const User = require('./models/user');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public'))); // for serving path of static files eg. css files
-app.use(session({ secret: 'my secret', resave: false, saveUninitialized: false }));
+app.use(session({ secret: 'my secret', resave: false, saveUninitialized: false, store: store }));
 
 
 app.use((req, res, next) => {
@@ -38,7 +46,7 @@ app.use(authRoutes);
 
 app.use(errorControllers.get404);
 
-mongoose.connect('mongodb+srv://Vaibhav:23101995@cluster0.gsxn3bf.mongodb.net/shop')
+mongoose.connect(MONGODB_URI)
     .then(result => {
         User.findOne().then(user => {
             if (!user) {
