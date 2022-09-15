@@ -1,8 +1,10 @@
+const brcrypt = require('bcryptjs');
+
 const User = require('../models/user');
 
 exports.getLogin = (req, res, next) => {
     // const isLoggedIn = req.get('Cookie').split('=')[1] === true;
-    console.log(req.session.isLoggedIn,'in login');
+    // console.log(req.session.isLoggedIn,'in login');
     res.render('auth/login', {
         path: '/login',
         pageTitle: 'Login',
@@ -26,36 +28,39 @@ exports.postLogin = (req, res, next) => {
         // console.log(req.session,'in post login session');
 
         req.session.save(err => {
-            if(err){
+            if (err) {
                 console.log(err);
             } else {
                 res.redirect('/');
             }
-        }); 
+        });
 
     }).catch(err => console.log(err));
 
 };
 
-exports.postSignup = (req, res, next) =>{
+exports.postSignup = (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
     const confirmPassword = req.body.confirmPassword;
-    User.findOne({email: email})
-    .then(userDoc =>{
-        if (userDoc){
-            res.redirect('/login');
-        }
-        const user = new User({
-            email: email,
-            password: password,
-            cart: {items: []}
+    User.findOne({ email: email })
+        .then(userDoc => {
+            if (userDoc) {
+                res.redirect('/signup');
+            }
+            return brcrypt.hash(password, 12)
+                .then(hashedPassword => {
+                    const user = new User({
+                        email: email,
+                        password: hashedPassword,
+                        cart: { items: [] }
+                    })
+                    return user.save()
+                })
+                .then(result => {
+                    res.redirect('/login');
+                })
         })
-        return user.save()
-        .then(result => {
-            res.redirect('/login');
-        })
-    })
 };
 
 exports.postLogout = (req, res, next) => {
