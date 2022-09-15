@@ -10,6 +10,14 @@ exports.getLogin = (req, res, next) => {
     });
 };
 
+exports.getSignup = (req, res, next) => {
+    res.render('auth/signup', {
+        path: '/signup',
+        pageTitle: 'Signup',
+        isAuthenticated: false
+    });
+};
+
 exports.postLogin = (req, res, next) => {
     // res.setHeader('Set-Cookie', 'loggedIn=true: HttpOnly');
     User.findById('631f200ddb3d90b8064e4c78').then(user => {
@@ -26,6 +34,10 @@ exports.postLogin = (req, res, next) => {
         }); 
 
     }).catch(err => console.log(err));
+
+};
+
+exports.postSignup = (req, res, next) =>{
 
 };
 
