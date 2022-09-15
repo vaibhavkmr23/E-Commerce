@@ -46,7 +46,7 @@ exports.postSignup = (req, res, next) => {
     User.findOne({ email: email })
         .then(userDoc => {
             if (userDoc) {
-                res.redirect('/signup');
+                return res.redirect('/signup');
             }
             return brcrypt.hash(password, 12)
                 .then(hashedPassword => {
@@ -59,8 +59,11 @@ exports.postSignup = (req, res, next) => {
                 })
                 .then(result => {
                     res.redirect('/login');
-                })
+                });
         })
+        .catch(err => {
+            console.log(err);
+        });
 };
 
 exports.postLogout = (req, res, next) => {
