@@ -21,22 +21,30 @@ exports.getSignup = (req, res, next) => {
 };
 
 exports.postLogin = (req, res, next) => {
-    // res.setHeader('Set-Cookie', 'loggedIn=true: HttpOnly');
-    User.findById('631f200ddb3d90b8064e4c78').then(user => {
-        req.session.user = user;
-        req.session.isLoggedIn = true;
-        // console.log(req.session,'in post login session');
-
-        req.session.save(err => {
-            if (err) {
-                console.log(err);
-            } else {
-                res.redirect('/');
-            }
-        });
-
-    }).catch(err => console.log(err));
-
+    const email = req.body.email;
+    const password = req.body.password
+    User.findOne({ email: email }).then(user => {
+        if (!user) {
+            return res.redirect('/login');
+        }
+        brcrypt.compare(password, user.password)
+            .then(doMatch => {
+                if (doMatch) {
+                    req.session.user = user;
+                    req.session.isLoggedIn = true;
+                    return req.session.save(err => {
+                        // if (err) {
+                        //     console.log(err);
+                        // } else {
+                        console.log("Error is::", err);
+                        return res.redirect('/');
+                        // }
+                    })
+                }
+                res.redirect('/login')
+            })
+    })
+        .catch(err => console.log(err));
 };
 
 exports.postSignup = (req, res, next) => {
