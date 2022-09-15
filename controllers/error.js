@@ -1,4 +1,4 @@
 exports.get404 = (req, res ,next) => {
     // res.status(404).sendFile(path.join(__dirname, "views", "404.html"))
-    res.status(404).render('404', {pageTitle: 'Page Not Found', path: '', isAuthenticated: req.session.isloggedIn}); // rendering PUG file.
+    res.status(404).render('404', {pageTitle: 'Page Not Found', path: '', isAuthenticated: req.session.isLoggedIn}); // rendering PUG file.
 }
