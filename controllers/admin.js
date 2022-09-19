@@ -80,9 +80,7 @@ exports.postEditProduct = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-    Product.find()
-        // .select('title price -_id')
-        // .populate('userId')// if you want to populated data related to userId
+    Product.find({userId: req.user._id})
         .then((products) => {
             console.log(products)
             res.render('admin/products', {
