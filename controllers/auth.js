@@ -1,3 +1,5 @@
+const crypto = require('crypto');
+
 const brcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
 const sendgridTransport = require('nodemailer-sendgrid-transport');
@@ -12,10 +14,10 @@ const transporter = nodemailer.createTransport(sendgridTransport({
 
 exports.getLogin = (req, res, next) => {
     let message = (req.flash('error'));
-    if(message.length > 0){
+    if (message.length > 0) {
         message = message[0];
     }
-    else{
+    else {
         message = null;
     }
     res.render('auth/login', {
@@ -27,10 +29,10 @@ exports.getLogin = (req, res, next) => {
 
 exports.getSignup = (req, res, next) => {
     let message = (req.flash('error'));
-    if(message.length > 0){
+    if (message.length > 0) {
         message = message[0];
     }
-    else{
+    else {
         message = null;
     }
     res.render('auth/signup', {
@@ -112,10 +114,10 @@ exports.postLogout = (req, res, next) => {
 
 exports.getReset = (req, res, next) => {
     let message = (req.flash('error'));
-    if(message.length > 0){
+    if (message.length > 0) {
         message = message[0];
     }
-    else{
+    else {
         message = null;
     }
     res.render('auth/reset', {
@@ -124,3 +126,90 @@ exports.getReset = (req, res, next) => {
         errorMessage: message
     });
 };
+
+exports.postReset = (req, res, next) => {
+    crypto.randomBytes(32, (err, buffer) => {
+        if (err) {
+            console.log("error is::", err);
+            return res.redirect('/login')
+        }
+        const token = buffer.toString('hex');
+        User.findOne({ email: req.body.email })
+            .then(user => {
+                if (!user) {
+                    req.flash('error', "No Acount found")
+                    return res.redirect('/reset')
+                }
+                user.resetToken = token;
+                user.resetTokenExpiration = Date.now() + 3600000;
+                return user.save()
+            })
+            .then(result => {
+                transporter.sendMail({
+                    to: req.body.email,
+                    from: "vaibhav@hgk.com",
+                    subject: 'Password Reset',
+                    html: ` 
+                    <p> You requested a Password Request </p>
+                    <p> Click this <a href="http://localhost:3000/reset/${token}"></a>
+                    `
+                })
+            })
+            .catch(err => {
+                console.log("Error is ::", err)
+            })
+    })
+}
+
+exports.getNewPassword = (req, res, next) => {
+    let token = req.params.token;
+    User.findOne({ resetToken: token, resetTokenExpiration: { $gt: Date.now() } })
+        .then(user => {
+            let message = (req.flash('error'));
+            if (message.length > 0) {
+                message = message[0];
+            }
+            else {
+                message = null;
+            }
+            res.render('auth/new-password', {
+                path: '/new-password',
+                pageTitle: 'New Password',
+                errorMessage: message,
+                passwordToken: token,
+                userId: user._id.toString()// need that for Post request where we have to save our new password
+            });
+        })
+        .catch(err => {
+            console.log(err);
+        })
+
+}
+
+exports.postNewPassword = (req, res, next) => {
+    const newPassword = req.body.password;
+    const userId = req.body.userId;
+    const passwordToken = req.body.passwordToken;
+    let resetUser;
+
+    User.findOne({
+        resetToken: passwordToken,
+        resetTokenExpiration: { $gt: Date.now() },
+        _id: userId
+    })
+        .then(user => {
+            resetUser = user;
+            return brcrypt.hash(newPassword, 12);
+        })
+        .then(hashedPassword => {
+            resetUser.password = hashedPassword;
+            resetUser.resetToken = undefined;
+            resetUser.resetTokenExpiration = undefined;
+            return resetUser.save();
+        }).then(result => { 
+            res.redirect('/login');
+         })
+        .catch(err => {
+            console.log(err);
+        })
+}
