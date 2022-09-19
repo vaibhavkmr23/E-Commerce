@@ -1,6 +1,8 @@
 const express = require('express');
 
-const { check, body } = require('express-validator/check')
+const { check, body } = require('express-validator/check');
+
+const User = require('../models/user')
 
 const router = express.Router();
 
@@ -18,10 +20,16 @@ router.post('/signup',
             .isEmail()
             .withMessage('Please Enter valid email.')
             .custom((value, { req }) => { // Adding Custom Validation
-                if (value === 'test@test.com') {
-                    throw new Error("This Email is Forbidden.");
-                }
-                return true;
+                // if (value === 'test@test.com') {
+                //     throw new Error("This Email is Forbidden.");
+                // }
+                // return true;
+                return User.findOne({ email: value })
+                    .then(userDoc => {
+                        if (userDoc) {
+                            return Promise.reject('E-Mail exists already, please Pick A new One');
+                        }
+                    })
             }),
         body('password',
             'Please Enter password with only numbers and text and at least 5 charecters'
