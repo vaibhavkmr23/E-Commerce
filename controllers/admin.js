@@ -24,9 +24,9 @@ exports.postAddProduct = (req, res, next) => {
 
     const errors = validationResult(req);
 
-    if (!errors.isEmpty()){
+    if (!errors.isEmpty()) {
         console.log(errors.array())
-        return res.render('admin/edit-product', {
+        return res.status(422).render('admin/edit-product', {
             pageTitle: 'Add Product',
             path: '/admin/add-product',
             editing: false,
@@ -94,8 +94,8 @@ exports.postEditProduct = (req, res, next) => {
 
 
     const errors = validationResult(req);
-    if(!errors.isEmpty()){
-        res.render('admin/edit-product', {
+    if (!errors.isEmpty()) {
+        return res.status(422).render('admin/edit-product', {
             pageTitle: 'Edit Product',
             path: '/admin/edit-product',
             editing: true,
@@ -149,7 +149,7 @@ exports.getProducts = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
     const prodId = req.body.productId;
-    Product.deleteOne({_id: prodId, userId: req.user._id})
+    Product.deleteOne({ _id: prodId, userId: req.user._id })
         .then(result => {
             console.log("Destroyed Product");
             res.redirect('/admin/products');
