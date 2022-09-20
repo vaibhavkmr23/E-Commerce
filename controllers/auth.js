@@ -45,7 +45,8 @@ exports.getSignup = (req, res, next) => {
             email: '',
             password: '',
             confirmPassword: '',
-        }
+        },
+        validationError: []
     });
 };
 
@@ -60,7 +61,7 @@ exports.postLogin = (req, res, next) => {
             path: '/login',
             pageTitle: 'Login',
             errorMessage: errors.array()[0].msg,
-            
+
         });
     }
 
@@ -105,7 +106,8 @@ exports.postSignup = (req, res, next) => {
                 email: email,
                 password: password,
                 confirmPassword: req.body.confirmPassword,
-            }
+            },
+            validationError: errors.array()
         });
     }
 
