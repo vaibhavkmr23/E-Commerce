@@ -143,7 +143,7 @@ exports.getOrders = (req, res, next) => {
 
 exports.getInvoice = (req, res, next) => {
     const orderId = req.params.orderId;
-    
+
     //Adding Extra CheckS
     Order.findById(orderId)
         .then(order => {
@@ -155,14 +155,24 @@ exports.getInvoice = (req, res, next) => {
             }
             const invoiceName = 'invoices-' + orderId + '.pdf';
             const invoicePath = path.join('data', 'invoices', invoiceName);
-            fs.readFile(invoicePath, (err, data) => {
-                if (err) {
-                    return next(err);
-                }
-                res.setHeader('Content-Type', 'application/pdf');
-                res.setHeader('Content_Disposition', 'inline; filename="' + invoiceName + '""');
-                res.send(data);
-            });
+            // fs.readFile(invoicePath, (err, data) => {
+            //     if (err) {
+            //         return next(err);
+            //     }
+            //     res.setHeader('Content-Type', 'application/pdf');
+            //     res.setHeader('Content_Disposition', 'inline; filename="' + invoiceName + '""');
+            //     res.send(data);
+            // });
+
+            //Reccomended way for bigger file to do in streams
+
+            const file = fs.createReadStream(invoicePath);
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader(
+                'Content_Disposition',
+                'inline; filename="' + invoiceName + '""'
+            );
+            file.pipe(res) // sends the readable file into writeable one, response is writable
         })
         .catch(err => next(err));
 };
