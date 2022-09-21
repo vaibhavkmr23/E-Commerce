@@ -4,6 +4,8 @@ const path = require('path');
 const Product = require('../models/product');
 const Order = require('../models/order');
 
+const PDFDocument = require('pdfkit');
+
 
 exports.getProducts = (req, res, next) => {
     Product.find().then(products => {
@@ -155,6 +157,19 @@ exports.getInvoice = (req, res, next) => {
             }
             const invoiceName = 'invoices-' + orderId + '.pdf';
             const invoicePath = path.join('data', 'invoices', invoiceName);
+
+            const pdfDoc = new PDFDocument();
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader(
+                'Content_Disposition',
+                'inline; filename="' + invoiceName + '""'
+            );
+            pdfDoc.pipe(fs.createWriteStream(invoicePath));
+            pdfDoc.pipe(res);
+
+            pdfDoc.text('Hello World!!');
+
+            pdfDoc.end();
             // fs.readFile(invoicePath, (err, data) => {
             //     if (err) {
             //         return next(err);
@@ -166,13 +181,9 @@ exports.getInvoice = (req, res, next) => {
 
             //Reccomended way for bigger file to do in streams
 
-            const file = fs.createReadStream(invoicePath);
-            res.setHeader('Content-Type', 'application/pdf');
-            res.setHeader(
-                'Content_Disposition',
-                'inline; filename="' + invoiceName + '""'
-            );
-            file.pipe(res) // sends the readable file into writeable one, response is writable
+            // const file = fs.createReadStream(invoicePath);
+            
+            // file.pipe(res) // sends the readable file into writeable one, response is writable
         })
         .catch(err => next(err));
 };
