@@ -8,6 +8,7 @@ const session = require('express-session');
 const MongoDbStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
 const flash = require('connect-flash');
+const multer = require('multer');
 
 const MONGODB_URI = 'mongodb+srv://Vaibhav:23101995@cluster0.gsxn3bf.mongodb.net/shop';
 
@@ -33,6 +34,7 @@ const errorControllers = require('./controllers/error');
 const User = require('./models/user');
 
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(multer({dest: 'Images'}).single('image'));
 app.use(express.static(path.join(__dirname, 'public'))); // for serving path of static files eg. css files
 app.use(session({ secret: 'my secret', resave: false, saveUninitialized: false, store: store }));
 
