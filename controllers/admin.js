@@ -51,7 +51,6 @@ exports.postAddProduct = (req, res, next) => {
             editing: false,
             product: {
                 title: title,
-                imageUrl: imageUrl,
                 price: price,
                 decription: description
             },
@@ -146,8 +145,7 @@ exports.postEditProduct = (req, res, next) => {
             product.description = updatedDesc;
             if(image){
                 product.imageUrl = image.path;
-            }
-            
+            }  
             product._id = prodId;
 
             return product.save()

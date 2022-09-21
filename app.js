@@ -53,6 +53,8 @@ const User = require('./models/user');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).single('image'));
+
+app.use('/Images', express.static(path.join(__dirname, 'Images')));
 app.use(express.static(path.join(__dirname, 'public'))); // for serving path of static files eg. css files
 app.use(session({ secret: 'my secret', resave: false, saveUninitialized: false, store: store }));
 
