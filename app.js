@@ -43,11 +43,19 @@ app.use(csrfProtection);
 app.use(flash());
 
 app.use((req, res, next) => {
+    res.locals.isAuthenticated = req.session.isLoggedIn;
+    res.locals.csrfToken = req.csrfToken();
+    next();
+});
+
+app.use((req, res, next) => {
+    // throw new Error('Sync Dummy');  // A sync error is caught by express error middleware
     if (!req.session.user) {
         return next();
     }
     User.findById(req.session.user._id)
         .then(user => {
+            throw new Error('Sync Dummy');
             if (!user) {
                 return next();
             }
@@ -56,15 +64,12 @@ app.use((req, res, next) => {
         })
         .catch(err => {
             // console.log(err)
-            throw new Error(err);
+            // throw new Error(err);
+            next(new Error(err)); // for async or  for callback and promises always use this
         });
 });
 
-app.use((req, res, next) => {
-    res.locals.isAuthenticated = req.session.isLoggedIn;
-    res.locals.csrfToken = req.csrfToken();
-    next();
-});
+
 
 
 app.use('/admin', adminRoutes);
@@ -75,9 +80,16 @@ app.get('/500', errorControllers.get500);
 
 app.use(errorControllers.get404);
 
-app.use((error, req, res, next)=>{
+app.use((error, req, res, next) => {
     // res.status(error.httpStatusCode).render(...)
-    res.redirect('/500');
+    // res.redirect('/500');
+
+    // rendering error page for  geting stuck in infinite loop to show error outside callback and promises
+    res.status(500).render('500', {
+        pageTitle: 'Error!',
+        path: '/500',
+        isAuthenticated: req.session.isLoggedIn
+    });
 })
 
 mongoose.connect(MONGODB_URI)
