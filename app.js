@@ -21,6 +21,15 @@ const store = new MongoDbStore({
 
 const csrfProtection = csrf();
 
+const fileStorage = multer.diskStorage({
+    destination: (req, res, cb) =>{
+        cb(null, 'Images');
+    } ,
+    filename: (req, file, cb) =>{
+        cb(null, new Date().getTime() + '-' + file.originalname);
+    }
+})
+
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
@@ -34,7 +43,7 @@ const errorControllers = require('./controllers/error');
 const User = require('./models/user');
 
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(multer({dest: 'Images'}).single('image'));
+app.use(multer({storage: fileStorage }).single('image'));
 app.use(express.static(path.join(__dirname, 'public'))); // for serving path of static files eg. css files
 app.use(session({ secret: 'my secret', resave: false, saveUninitialized: false, store: store }));
 
