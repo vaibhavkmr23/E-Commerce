@@ -10,7 +10,9 @@ const csrf = require('csurf');
 const flash = require('connect-flash');
 const multer = require('multer');
 
-const MONGODB_URI = 'mongodb+srv://Vaibhav:23101995@cluster0.gsxn3bf.mongodb.net/shop';
+// console.log(process.env.NODE_ENV); NODE_ENV not recognised
+
+const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.gsxn3bf.mongodb.net/${process.env.MONGO_DATABASE}`;
 
 
 const app = express();
@@ -116,8 +118,8 @@ app.use((error, req, res, next) => {
 
 mongoose.connect(MONGODB_URI)
     .then(result => {
-        app.listen(3000);
-        console.log("Connected");
+        app.listen(process.env.PORT || 3000);
+        console.log("Connected!!!!!");
     }).catch(err => {
         console.log(err);
     })
