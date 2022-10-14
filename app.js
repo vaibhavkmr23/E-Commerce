@@ -9,7 +9,8 @@ const MongoDbStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
 const flash = require('connect-flash');
 const multer = require('multer');
-const helmet = require('helmet')
+const helmet = require('helmet');
+const compression = require('compression');
 
 // console.log(process.env.NODE_ENV); NODE_ENV not recognised
 
@@ -51,6 +52,7 @@ const shopRoutes = require('./routes/shop');
 const authRoutes = require('./routes/auth');
 
 app.use(helmet());
+app.use(compression());
 
 const errorControllers = require('./controllers/error');
 
